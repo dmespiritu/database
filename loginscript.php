@@ -3,10 +3,10 @@
 include("settings.php");
 session_start();
 if($_SERVER["REQUEST_METHOD"] == "POST") {
-    $myusername = $_POST['username'];
-    $mypassword = $_POST['password'];
+    $myusername = $_POST['Username'];
+    $mypassword = $_POST['Password'];
     $hashpw = sha1($mypassword);
-    $query = "SELECT * FROM $table WHERE username = '$myusername' and password = '$hashpw'";
+    $query = "SELECT * FROM $table WHERE Username = '$myusername' and Password = '$hashpw'";
     $result = mysqli_query($db,$query);
     //Check number of rows that match the query
     $count = mysqli_num_rows($result);
@@ -15,7 +15,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
       $_SESSION['username'] = $myusername;
       $_SESSION['logged_in'] = 1;
       //Update database logged_in to 1
-      $sql = "UPDATE employee SET logged_in = 1 WHERE username = '$myusername'";
+      $sql = "UPDATE Admin SET logged_in = 1 WHERE Username = '$myusername'";
       mysqli_query($db, $sql);
       echo "<p>Success</p>";
       header("location:admin.php");

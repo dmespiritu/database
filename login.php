@@ -1,33 +1,25 @@
+<!DOCTYPE html>
 
 <?php
-// php that will login your page
-   include "settings.php";
-   if(!isset($_SESSION))
-   {
-   session_start();
-   }
+include("settings.php");
+session_start();
 
 
-   
-   if($_SERVER["REQUEST_METHOD"] == "POST") {
-      // username and password sent from form 
-      
-      $myusername = mysqli_real_escape_string($db,$_POST['username']) or die ("ERROR Failed to connect to: the database " .mysqli_error($db));
-      $mypassword = mysqli_real_escape_string($db,SHA1($_POST['password'])) or die ; 
-      $hashpw = sha1($mypassword); 
-      $query = "SELECT * FROM $table WHERE username = '$myusername' and password = '$hashpw'";  
-      $result = mysqli_query($db,$query); 
-      $count = mysqli_num_rows($result);
-
-      //this is a prepared sql statement
-      $sql = "SELECT *FROM $table where username = ? and password= ?"; 
-      
-      
-       if($count == 1) {
-      $_SESSION['username'] = $myusername;
+if($_SERVER["REQUEST_METHOD"] == "POST") {
+    $myusername = $_POST['Username'];
+    $mypassword = $_POST['Password'];
+    $hashpw = sha1($mypassword);
+    $query = "SELECT * FROM $table WHERE Username = '$myusername' and Password = '$hashpw'";
+    $result = mysqli_query($db,$query);
+    //Check number of rows that match the query
+    $count = mysqli_num_rows($result);
+    //If matched row, then login the user and changed logged_in to true
+    
+    if($count == 1) {
+      $_SESSION['Username'] = $myusername;
       $_SESSION['logged_in'] = 1;
       //Update database logged_in to 1
-      $sql = "UPDATE admin SET logged_in = 1 WHERE username = '$myusername'";
+      $sql = "UPDATE Admin SET logged_in = 1 WHERE Username = '$myusername'";
       mysqli_query($db, $sql);
       //echo "<p>Success</p>";
       header("location:admin.php");
@@ -38,13 +30,7 @@
       session_destroy();
     }
   }
-
-
 ?>
-
-
-
-
 
 <html>
    
@@ -70,10 +56,7 @@
       </style>
       
    </head>
-     <?php
-   include 'navbar.php';
 
-   ?>
    <br>
    <body>
    
@@ -83,10 +66,12 @@
             
             <div style = "margin:30px">
                
-               <form action = "" method = "post">
-                  <label>UserName  :</label><input type = "text" name = "UserName" class = "box"/><br /><br />
-                  <label>Password  :</label><input type = "password" name = "UserPass" class = "box" /><br/><br />
+               <form action = "login.php"  id="loginform" method = "post">
+                  <div class ="container">
+                  <label>UserName:</label><input type = "text" name = "Username" class = "box" required><br /><br />
+                  <label>Password:</label><input type = "password" name = "Password" class = "box" required/><br/><br />
                   <input type = "submit" value = " Submit " class = "btn btn-primary btn-lg"/><br />
+                  </div>
                </form>
 
                <button><a href="register.php" class="button">Register Here</a></button> 
@@ -100,4 +85,7 @@
       </div>
   
 </html>
+
+ 
+
 
