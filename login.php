@@ -12,37 +12,33 @@
    if($_SERVER["REQUEST_METHOD"] == "POST") {
       // username and password sent from form 
       
-      $myusername = mysqli_real_escape_string($db,$_POST['UserName']) or die ("ERROR Failed to connect to: the database " .mysqli_error($db));
-      $mypassword = mysqli_real_escape_string($db,SHA1($_POST['UserPass'])) or die ; 
-   
-
-      $sql = "SELECT UserID FROM $table WHERE UserName = '$myusername' AND UserPass = '$mypassword'";
-      $result = mysqli_query($db,$sql);
-      $row = mysqli_fetch_array($result,MYSQLI_ASSOC);
-      $active = $row['active'];
-      
+      $myusername = mysqli_real_escape_string($db,$_POST['username']) or die ("ERROR Failed to connect to: the database " .mysqli_error($db));
+      $mypassword = mysqli_real_escape_string($db,SHA1($_POST['password'])) or die ; 
+      $hashpw = sha1($mypassword); 
+      $query = "SELECT * FROM $table WHERE username = '$myusername' and password = '$hashpw'";  
+      $result = mysqli_query($db,$query); 
       $count = mysqli_num_rows($result);
-      
-      // If result matched $myusername and $mypassword, table row must be 1 row
-      
-      if($count == 1) {
-       
-         $_SESSION['login_user'] = $myusername;
-         $query = "UPDATE $table SET LoggedOn = 1 WHERE UserName = '$myusername'"; 
-         mysqli_query($db, $query); 
-         $_SESSION['LoggedOn'] = 1;
-         $_SESSION['UserID'] = $row['UserID'];
-         header("location: contacts.php");
-      }
-      else {
-         $error = "Login or Password Invalid";
-         
-      }
-   }
 
+      //this is a prepared sql statement
+      $sql = "SELECT *FROM $table where username = ? and password= ?"; 
+      
+      
+       if($count == 1) {
+      $_SESSION['username'] = $myusername;
+      $_SESSION['logged_in'] = 1;
+      //Update database logged_in to 1
+      $sql = "UPDATE admin SET logged_in = 1 WHERE username = '$myusername'";
+      mysqli_query($db, $sql);
+      //echo "<p>Success</p>";
+      header("location:admin.php");
+    }
+    else {  
+      header("location:login.php");
+      session_unset();
+      session_destroy();
+    }
+  }
 
-   
-  
 
 ?>
 
